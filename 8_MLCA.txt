@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <graphics.h>
+#include <math.h>
+
+// Function to clip a line using the Midpoint Subdivision line clipping algorithm
+void clipLineMS(int x0, int y0, int x1, int y1) {
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+    int steps, k;
+    float xIncrement, yIncrement, x = x0, y = y0;
+
+    // Calculate steps needed for generating pixels
+    if (abs(dx) > abs(dy))
+        steps = abs(dx);
+    else
+        steps = abs(dy);
+
+    // Calculate increment in x and y for each step
+    xIncrement = (float)dx / (float)steps;
+    yIncrement = (float)dy / (float)steps;
+
+    // Put pixel for each step
+    putpixel(x, y, WHITE);
+    for (k = 0; k < steps; k++) {
+        x += xIncrement;
+        y += yIncrement;
+        putpixel(round(x), round(y), WHITE);
+    }
+}
+
+int main() {
+    int width, height;
+    int x0, y0, x1, y1;
+
+    printf("Enter the width of the window: ");
+    scanf("%d", &width);
+    printf("Enter the height of the window: ");
+    scanf("%d", &height);
+
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, (char*)"");
+
+    // Draw the outer frame of the window
+    setcolor(WHITE);
+    rectangle(50, 50, width - 50, height - 50); // Adjusted for padding
+
+    // Prompt user for the coordinates
+    printf("Enter the coordinates of the first point: ");
+    scanf("%d%d", &x0, &y0);
+    printf("Enter the coordinates of the second point: ");
+    scanf("%d%d", &x1, &y1);
+
+    // Clip and draw the line
+    clipLineMS(x0, y0, x1, y1);
+
+    // Close the graphics window
+    getch(); // Wait for a key press before closing
+    closegraph();
+    return 0;
+}
+
+
+Enter the width of the window: 400
+Enter the height of the window: 300
+Enter the coordinates of the first point: 50 50
+Enter the coordinates of the second point: 200 200

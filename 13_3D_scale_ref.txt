@@ -1,0 +1,88 @@
+#include <graphics.h>
+#include <conio.h>
+#include <math.h>
+int i;
+// Function to project 3D points onto a 2D plane
+void project(int x, int y, int z, int *xp, int *yp) {
+    *xp = x + (z / 2); // Simple perspective projection
+    *yp = y - (z / 2);
+}
+
+// Function to draw a polygon
+void drawPolygon(int poly[][3], int n) {
+    int xp1, yp1, xp2, yp2;
+    for ( i = 0; i < n - 1; ++i) {
+        project(poly[i][0], poly[i][1], poly[i][2], &xp1, &yp1);
+        project(poly[i + 1][0], poly[i + 1][1], poly[i + 1][2], &xp2, &yp2);
+        line(xp1, yp1, xp2, yp2);
+    }
+    project(poly[n - 1][0], poly[n - 1][1], poly[n - 1][2], &xp1, &yp1);
+    project(poly[0][0], poly[0][1], poly[0][2], &xp2, &yp2);
+    line(xp1, yp1, xp2, yp2);
+}
+
+// Function to scale a polygon by sx, sy, sz units
+void scalePolygon(int poly[][3], int n, float sx, float sy, float sz) {
+    for (i = 0; i < n; ++i) {
+        poly[i][0] *= sx;
+        poly[i][1] *= sy;
+        poly[i][2] *= sz;
+    }
+}
+
+// Function to reflect a polygon about the z-axis
+void reflectPolygonZ(int poly[][3], int n) {
+    int temp;
+    for (i = 0; i < n / 2; ++i) {
+        temp = poly[i][0];
+        poly[i][0] = poly[n - 1 - i][0];
+        poly[n - 1 - i][0] = temp;
+
+        temp = poly[i][1];
+        poly[i][1] = poly[n - 1 - i][1];
+        poly[n - 1 - i][1] = temp;
+    }
+}
+
+int main() {
+    int poly[4][3] = {
+        {100, 100, 100},
+        {200, 100, 100},
+        {200, 200, 100},
+        {100, 200, 100}
+    };
+    int n = 4;
+    int scaledPoly[4][3];
+    int reflectedPoly[4][3];
+
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "C:\\Turboc3\\BGI");
+
+    // Draw the original polygon
+    setcolor(WHITE);
+    drawPolygon(poly, n);
+
+    // Scale the polygon by 3 units
+    for (i = 0; i < n; ++i) {
+        scaledPoly[i][0] = poly[i][0];
+        scaledPoly[i][1] = poly[i][1];
+        scaledPoly[i][2] = poly[i][2];
+    }
+    scalePolygon(scaledPoly, n, 3, 3, 3);
+    setcolor(RED);
+    drawPolygon(scaledPoly, n);
+
+    // Reflect the polygon about the z-axis
+    for (i = 0; i < n; ++i) {
+        reflectedPoly[i][0] = poly[i][0];
+        reflectedPoly[i][1] = poly[i][1];
+        reflectedPoly[i][2] = poly[i][2];
+    }
+    reflectPolygonZ(reflectedPoly, n);
+    setcolor(GREEN);
+    drawPolygon(reflectedPoly, n);
+
+    getch();
+    closegraph();
+    return 0;
+}

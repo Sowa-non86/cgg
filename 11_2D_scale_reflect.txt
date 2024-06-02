@@ -1,0 +1,60 @@
+#include <graphics.h>
+#include <conio.h>
+int i;
+// Function to draw a polygon
+void drawPolygon(int poly[], int n) {
+    for ( i = 0; i < n - 2; i += 2) {
+        line(poly[i], poly[i + 1], poly[i + 2], poly[i + 3]);
+    }
+    line(poly[n - 2], poly[n - 1], poly[0], poly[1]);
+}
+
+// Function to scale a polygon by a factor of s
+void scalePolygon(int poly[], int n, float sx, float sy) {
+    for ( i = 0; i < n; i += 2) {
+        poly[i] *= sx;
+        poly[i + 1] *= sy;
+    }
+}
+
+// Function to reflect a polygon about the x-axis
+void reflectPolygonX(int poly[], int n) {
+    for ( i = 1; i < n; i += 2) {
+        poly[i] = getmaxy() - poly[i];
+    }
+}
+
+int main() {
+    int poly[] = {100, 100, 200, 100, 200, 200, 100, 200};
+    int n = sizeof(poly) / sizeof(poly[0]);
+    int scaledPoly[8];
+    int reflectedPoly[8];
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "C:\\Turboc3\\BGI");
+
+    // Draw the original polygon
+    setcolor(WHITE);
+    drawPolygon(poly, n);
+
+    // Scale the polygon by 3 units
+    for ( i = 0; i < n; ++i) {
+        scaledPoly[i] = poly[i];
+    }
+    scalePolygon(scaledPoly, n, 3, 3);
+    setcolor(RED);
+    drawPolygon(scaledPoly, n);
+
+    // Reflect the polygon about the x-axis
+    for ( i = 0; i < n; ++i) {
+        reflectedPoly[i] = poly[i];
+    }
+    reflectPolygonX(reflectedPoly, n);
+    setcolor(GREEN);
+    drawPolygon(reflectedPoly, n);
+
+    getch();
+    closegraph();
+    return 0;
+}
+
+

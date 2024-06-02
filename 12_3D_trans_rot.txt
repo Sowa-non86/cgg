@@ -1,0 +1,75 @@
+#include <graphics.h>
+#include <conio.h>
+#include <math.h>
+
+int i;
+
+// Function to project 3D points onto a 2D plane
+void project(int x, int y, int z, int *xp, int *yp) {
+    *xp = x + (z / 2); // Simple perspective projection
+    *yp = y - (z / 2);
+}
+
+// Function to draw a polygon
+void drawPolygon(int poly[][3], int n) {
+    int xp1, yp1, xp2, yp2;
+    for (i = 0; i < n - 1; ++i) {
+        project(poly[i][0], poly[i][1], poly[i][2], &xp1, &yp1);
+        project(poly[i + 1][0], poly[i + 1][1], poly[i + 1][2], &xp2, &yp2);
+        line(xp1, yp1, xp2, yp2);
+    }
+    project(poly[n - 1][0], poly[n - 1][1], poly[n - 1][2], &xp1, &yp1);
+    project(poly[0][0], poly[0][1], poly[0][2], &xp2, &yp2);
+    line(xp1, yp1, xp2, yp2);
+}
+
+// Function to translate a polygon by tx, ty, tz units
+void translatePolygon(int poly[][3], int n, int tx, int ty, int tz) {
+    for (i = 0; i < n; ++i) {
+        poly[i][0] += tx;
+        poly[i][1] += ty;
+        poly[i][2] += tz;
+    }
+}
+
+// Function to rotate a polygon around the z-axis by an angle
+void rotatePolygonZ(int poly[][3], int n, float angle) {
+    float rad = angle * M_PI / 180.0;
+    int x, y;
+    for ( i = 0; i < n; ++i) {
+        x = poly[i][0];
+        y = poly[i][1];
+        poly[i][0] = x * cos(rad) - y * sin(rad);
+        poly[i][1] = x * sin(rad) + y * cos(rad);
+    }
+}
+
+int main() {
+    int poly[4][3] = {
+        {100, 100, 100},
+        {200, 100, 100},
+        {200, 200, 100},
+        {100, 200, 100}
+    };
+    int n = 4;
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "C:\\Turboc3\\BGI");
+
+    // Draw the original polygon
+    setcolor(WHITE);
+    drawPolygon(poly, n);
+
+    // Translate the polygon by 2 units in x, y, and z directions
+    translatePolygon(poly, n, 2, 2, 2);
+    setcolor(RED);
+    drawPolygon(poly, n);
+
+    // Rotate the polygon around the z-axis by 90 degrees
+    rotatePolygonZ(poly, n,-20);
+    setcolor(GREEN);
+    drawPolygon(poly, n);
+
+    getch();
+    closegraph();
+    return 0;
+}
